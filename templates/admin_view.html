@@ -1,0 +1,171 @@
+{% extends 'layout.html' %}
+
+{% block title %}View{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col pt-3">
+            <select class="form-select bg-secondary text-white fw-bold w-100" name="month" id="month" onChange="my_fn(this);">
+                <option value="">Select Month</option>
+                {% for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %}
+                    <option value="{{ loop.index }}">{{ month }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col pt-3">
+            <button type="submit" class="text-white fw-bold btn w-100 bg-secondary form-group" id="btn_view">Search Attendance</button>
+        </div>
+        <div class="col mb-0 h6">
+            From
+            <input class="form-control" type="date" id="from_date">
+        </div>
+        <div class="col mb-0 h6">
+            To
+            <input class="form-control" type="date" id="to_date">
+        </div>
+        <div class="col pt-3">
+            <button type="submit" class="text-white fw-bold btn w-100 bg-secondary form-group" id="btn_report">Report</button>
+        </div>
+        <div class="col-1 mb-0 p-2 h6">
+            <div class="py-3">
+                <p class="">Grade: {% if parameters['progress'] >= 80.0 %}A
+                    {% elif parameters['progress'] >= 65.0 %}B
+                    {% elif parameters['progress'] >= 50.0 %}C
+                    {% elif parameters['progress'] >= 35.0 %}D
+                    {% else %}F
+                {% endif %} </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-between text-danger d-none" id="validate_month">
+            Please select a month!
+        </div>
+        <div class="col d-flex justify-content-between text-danger" id="setting">
+        </div>
+        <div class="col text-danger d-flex justify-content-between d-none" id="validate_date">
+            Please select From to End date!
+        </div>
+    </div>
+    <div class="row mx-auto pt-2">
+        <table class="table mb-0 h6 table-borderless">
+            <tr>
+                <td class="col">Name:</td>
+                <td class="col">{% if result %}
+                    {{ result['student']['name'] }}
+                {% else %}
+                    ...
+                {% endif %}
+                </td>
+                <td>Email:</td>
+                <td>{% if result %}
+                    {{ result['student']['email'] }}
+                {% else %}
+                    ...
+                {% endif %}
+                </td>
+                <td>Address: </td>
+                <td>{% if result %}
+                    {{ result['student']['address'] }}
+                {% else %}
+                    ...
+                {% endif %}
+                </td>
+                <td>Month: </td>
+                <td>{{ parameters['month'] }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ parameters['progress'] }}%">{{ parameters['progress'] }}%</div>
+    </div>
+    <div class="w-100 pt-2" id="table_id">
+        <table class="table table-hover mx-auto">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Day</th>
+                <th scope="col">Presence</th>
+                <th scope="col-1"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in all_days['date'] %}
+                <tr>
+                    <td class="col">{{ loop.index }}</td>
+                    <td class="col">{{ all_days['date'][loop.index - 1] }}</td>
+                    <td class="col">{{ all_days['day'][loop.index - 1] }}</td>
+                    <td class="col">
+                        <input class="form-check-input" type="checkbox" id="attendance" name="attendance" {{ 'checked' if all_days['presence'][loop.index - 1] == 'P'}}>
+                    </td>
+                    <td class="col-1 d-none">
+                        <input type="submit" class="btn btn-secondary btn-sm" value="Save"/>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+{% block footer %}
+    <script>
+
+        let month;
+        function my_fn(sel) {
+            month = sel.options[sel.selectedIndex].textContent;
+        };
+
+        $(document).ready(function(){
+            // Getting date values from date
+
+            // onclick function for Report button
+            $("#btn_report").click(function () {
+                var from_date = document.getElementById("from_date").value;
+                var to_date = document.getElementById("to_date").value;
+                if (from_date != '' & to_date != ''){
+                    window.location.assign("/view?from_date=" +from_date + "&to_date=" +to_date + "&student_name=" + "{{ result['student']['name'] }}" +"&user_id_search=" + {{ parameters['user_id_search'] }});
+                }else {
+                    document.getElementById("validate_date").classList.remove("d-none");
+                }
+            });
+
+
+            // For display button when user check the checkbox.
+            $(document).on("change", "input[type='checkbox']", function () {
+                $(this).closest('tr').find('td:last-child').removeClass("d-none");
+            });
+
+            // Call when user click save button for saving attendance.
+            $(document).on("click", "input[type='submit']", function () {
+                date = $(this).closest('tr').find('td:eq(1)').text();
+                if ($(this).closest('tr').find("input[type='checkbox']").prop("checked") == true){
+                    window.location.assign("/view?user_id_search=" +{{ parameters['user_id_search'] }} + "&check=True&date=" +date + "&month={{ parameters['month'] }}");
+
+                }else if($(this).closest('tr').find("input[type='checkbox']").prop("checked") == false){
+                    window.location.assign("/view?user_id_search=" +{{ parameters['user_id_search'] }} + "&check=False&date=" +date + "&month={{ parameters['month'] }}");
+
+                }
+
+            });
+
+            // OnClick function call when user click Attendance Search button
+            // Also check the month is selected or not
+            $("#btn_view").click(function () {
+                if (month){
+                    window.location.assign("/view?month=" +month + "&user_id_search=" + {{ parameters['user_id_search'] }})
+                }else {
+                    document.getElementById("validate_month").classList.remove("d-none");
+                    document.getElementById("setting").classList.add("d-none");
+                }
+            });
+
+
+        });
+
+
+    </script>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+
+{% block title %}View{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col pt-3">
+            <input type="text" class="form-control form-group" id="input_search" placeholder="Search Name" name="inputsearch" value="{{ parameters['search_name'] }}" required>
+        </div>
+        <div class="col pt-3">
+            <button type="submit" class="text-white fw-bold btn w-100 bg-secondary form-group" id="btnsearch">Search Student</button>
+        </div>
+        <div class="col pt-3">
+            <button type="submit" class="text-white fw-bold btn w-100 bg-secondary form-group" id="btnall">All Students</button>
+        </div>
+        <div class="col mb-0 h6">
+            From
+            <input class="form-control" type="date" id="from_date">
+        </div>
+        <div class="col mb-0 h6">
+            To
+            <input class="form-control" type="date" id="to_date">
+        </div>
+        <div class="col pt-3">
+            <button type="submit" class="text-white fw-bold btn w-100 bg-secondary form-group" id="btn_report">Report</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col d-flex justify-content-between text-danger d-none" id="validate_name">
+            Please provide a name!
+        </div>
+        <div class="col d-flex justify-content-between text-danger" id="setting">
+        </div>
+        <div class="col text-danger d-flex justify-content-between d-none" id="validate_date">
+            Please select From to End date!
+        </div>
+    </div>
+    <div class="w-100 pt-3 d-none" id="table_id">
+        <table class="table table-hover mx-auto">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Student ID</th>
+                <th scope="col">UserName</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Password</th>
+                <th scope="col">Address</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in all_students %}
+                <tr  style="cursor:pointer" onclick="window.location.href = '{{url_for('view', user_id_search=item['user_id'])}}'">
+                    <td class="col">{{ loop.index }}</td>
+                    <td class="col">{{ item['user_id'] }}</td>
+                    <td class="col">{{ item['username'] }}</td>
+                    <td class="col">{{ item['name'] }}</td>
+                    <td class="col">{{ item['email'] }}</td>
+                    <td class="col">{{ item['password'] }}</td>
+                    <td class="col">{{ item['address'] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+{% block footer %}
+    <script>
+        $(document).ready(function(){
+            {% if parameters['show_all_students'] == '1' or parameters['search_name'] %}
+                document.getElementById("table_id").classList.remove("d-none");
+            {% endif %}
+
+
+            $("#btn_report").click(function () {
+                var from_date = document.getElementById("from_date").value;
+                var to_date = document.getElementById("to_date").value;
+                if (from_date != '' & to_date != ''){
+                    window.location.assign("/home?from_date=" +from_date + "&to_date=" +to_date);
+                }else {
+                    document.getElementById("validate_date").classList.remove("d-none");
+                }
+            });
+
+
+            $("#btnsearch").click(function(){
+                var search_name=document.getElementById("input_search").value;
+                if (search_name != "")
+                {
+                    window.location.assign("{{ url_for('home')}}?search_name="+search_name)
+                }else {
+                    document.getElementById("validate_name").classList.remove("d-none");
+                    document.getElementById("table_id").classList.add("d-none");
+                    document.getElementById("setting").classList.add("d-none");
+                }
+
+            });
+
+            $("#btnall").click(function(){
+                window.location.assign("/home?show_all_students=1")
+            });
+
+
+            $("#input_search").click(function () {
+                document.getElementById("validate_name").classList.add("d-none");
+                document.getElementById("setting").classList.remove("d-none");
+            });
+
+            $("#from_date").click(function () {
+                document.getElementById("validate_date").classList.add("d-none");
+            });
+
+            $("#to_date").click(function () {
+                document.getElementById("validate_date").classList.add("d-none");
+            });
+
+        });
+
+
+    </script>
+{% endblock %}

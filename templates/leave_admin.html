@@ -1,0 +1,117 @@
+{% extends 'layout.html' %}
+
+{% block title %}View{% endblock %}
+
+{% block content %}
+
+    <div class="dropdown row pt-3">
+        <div class="col-2">
+            <select class="form-select bg-secondary text-white fw-bold w-100" name="year" id="year">
+                <option value="">Select Year</option>
+                {% for y in range(2018, 2021 + 1) %}
+                    <option value="{{ loop.index }}">{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            <select class="form-select bg-secondary text-white fw-bold w-100" name="month" id="select_month" onChange="my_fn(this);">
+                <option value="">Select Month</option>
+                {% for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %}
+                    <option value="{{ loop.index }}">{{ month }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn btn-secondary fw-bold w-100" id="btn_view_request">View Requests</button>
+        </div>
+    </div>
+
+    <div class="col-4 me-4 d-flex justify-content-end text-danger d-none" id="validate_month">
+        <p class='pe-4'>Please select a month!</p>
+    </div>
+
+    <div class="w-50 pt-3">
+        <p class="h5 text-secondary">Your attendance of month "{{ "AAAAA" }}" is below.</p>
+    </div>
+
+
+    <div class="w-100 pt-3" id="table_id">
+        <table class="table table-hover mx-auto">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Student ID</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">Date</th>
+                <th scope="col">Present</th>
+                <th scope="col">Absent</th>
+                <th scope="col">Leaves</th>
+                <th scope="col">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in range(1, 10) %}
+                <tr  {% if item == 4 %}
+                        style="cursor:pointer"
+                        {% endif %}
+                     onclick="{% if item == 5 %}
+                        window.location.href = '{{url_for('view', user_id_search=item['user_id'])}}'
+                    {% else %}
+                    ''
+                        {% endif %}
+                        ">
+                    <td class="col">{{ loop.index }}</td>
+                    <td class="col">{{ item }}</td>
+                    <td class="col">{{ item }}</td>
+                    <td class="col">{{ item }}</td>
+                    <td class="col">{{ item }}</td>
+                    <td class="col">{{ item }}</td>
+                    <td class="col">{{ item }}</td>
+                    <td class="col {% if item == 5 %}
+                        text-danger
+                        {% else %}
+                        text-secondary
+                    {% endif %}">
+                    {% if item == 5 %}
+                        pending
+                        {% else %}
+                        Approved
+                    {% endif %}
+
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+{% block footer %}
+    <script>
+
+        let month;
+        function my_fn(sel) {
+            month = sel.options[sel.selectedIndex].textContent;
+        };
+        $(document).ready(function(){
+
+            $("#btn_view_request").click(function () {
+                if (month){
+                    window.location.assign("/leave?month=" +month)
+                }
+                else{
+                   document.getElementById("validate_month").classList.remove("d-none");
+                }
+
+            });
+
+
+            $("#select_month").click(function () {
+                document.getElementById("validate_month").classList.add("d-none");
+            });
+
+        });
+
+
+    </script>
+{% endblock %}

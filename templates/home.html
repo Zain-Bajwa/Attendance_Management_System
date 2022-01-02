@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="text-success h6">{{ parameters['msg'] }}</div>
+    <form action="{{ url_for('home') }}" method="post" enctype="multipart/form-data">
+        <div class="pt-3 form-check">
+            <input class="form-check-input" type="checkbox" id="attendance" name="attendance" {{ 'checked' if parameters['attendance'] == 1 }}>
+            <label class="form-check-label h5" for="flexCheckDefault">
+                Mark Your Attendance of {{ parameters['today_date'] }}
+            </label>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <input type="submit" class="form-control fw-bold btn btn-secondary" value="Submit Attendance"/>
+            </div>
+
+        </div>
+    </form>
+    <div class=" pt-4 row">
+        <div class="col-2 mb-0 h6">
+            Select a date
+            <input class="form-control" type="date" min="2020-08-22" id="input_date">
+
+        </div>
+        <div class="col-2 pt-3">
+            <input type="button" class="form-control fw-bold btn btn-secondary" id="btn_request_leave" value="Request for leave"/>
+        </div>
+    </div>
+    <div class="text-danger d-none" id="validate_date_select">Please select a date</div>
+    <div class="text-danger d-none" id="validate_date_incorrect">Sorry! You can't select previous date.</div>
+    <div class="col-4 mt-4">
+        <div class="form-floating">
+            <textarea class="form-control" placeholder="Leave a comment here" id="textarea_message" style="height: 200px"></textarea>
+            <label for="floatingTextarea2">Message</label>
+        </div>
+    </div>
+    <div class="text-danger d-none" id="validate_message">Please write a message.</div>
+{% endblock %}
+{% block footer %}
+    <script>
+        $(document).ready(function () {
+            $("#btn_request_leave").click(function () {
+                var date = document.getElementById("input_date").value;
+                var message = document.getElementById("textarea_message").value
+                var today_date = new Date();
+
+                if(date == ''){
+                    document.getElementById("validate_date_select").classList.remove("d-none");
+                }
+                else {
+                    date = new Date(document.getElementById("input_date").value);
+                    if (date >= today_date) {
+                        if(message != ''){
+                            date = document.getElementById("input_date").value;
+                            window.location.assign("/home?date=" +date + "&message=" +message);
+                        }
+                        else{
+                          document.getElementById("validate_message").classList.remove("d-none")
+                        }
+
+                    } else {
+                        document.getElementById("validate_date_select").classList.add("d-none");
+                        document.getElementById("validate_date_incorrect").classList.remove("d-none");
+                    }
+                }
+            });
+
+            $("#input_date").click(function () {
+                document.getElementById("validate_date_select").classList.add("d-none");
+                document.getElementById("validate_date_incorrect").classList.add("d-none");
+            });
+
+            $("#textarea_message").click(function () {
+                document.getElementById("validate_message").classList.add("d-none");
+            });
+        });
+    </script>
+
+{% endblock %}

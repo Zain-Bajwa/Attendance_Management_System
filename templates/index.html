@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block head %} {% endblock %}
+
+{% block content %}
+    <div class="mx-auto bg-light p-3" style="width: 400px;">
+        <div class="row">
+            <h1 class="text-center">Login</h1>
+        </div>
+
+        <div class="row mx-0">
+            <div class="col-3 border-bottom border-3 border-primary pb-2 text-center">
+                <a class="text-decoration-none" href="{{ url_for('login') }}"> <b>Login</b></a>
+            </div>
+            <div class="col-3 text-center">
+                <a class="text-decoration-none text-secondary" href="{{ url_for('register') }}"><b>Register</b></a>
+            </div>
+        </div>
+        <form class="" action="{{ url_for('login') }}" method="post">
+            <div class="input-group my-2">
+                <span class="input-group-text bg-primary" id="basic-addon1">
+                    <i class="fas fa-user text-white"></i>
+                </span>
+                <input type="text" class="form-control" name="username" placeholder="Username" id="username" required>
+            </div>
+
+            <div class="input-group my-3">
+                <span class="input-group-text bg-primary" id="basic-addon1">
+                    <i class="fas fa-lock text-white"></i>
+                </span>
+                <input class="form-control" type="password" name="password" placeholder="Password" id="password" required>
+            </div>
+            <div class="text-center text-danger my-3">{{ msg }}</div>
+            <input type="submit" class="form-control fw-bold btn btn-primary" value="Login"></input>
+        </form>
+    </div>
+
+{% endblock %}

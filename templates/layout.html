@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <title>{% block title %}{% endblock %}</title>
+
+</head>
+<body class="bg-light">
+{% block head %}
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top" >
+        <div class="navbar-collapse collapse">
+            <a class="navbar-brand" href="#" target="_blank"><img width="30" height="30" src="{{url_for('static',filename = '/logo.png')}}" alt="Attendance Management System" title="Attendance Management System"></a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.path == url_for('home') }}" href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.path == url_for('profile') }}" href="{{ url_for('profile') }}">Profile</a>
+                </li>
+
+
+                <li class="nav-item {{ 'd-none' if session['type'] == 1 }}">
+                    <a class="nav-link {{ 'active' if request.path == url_for('view') }}" href="{{ url_for('view') }}">
+                        View Attendance
+                    </a>
+                </li>
+
+                <li class="nav-item {{ 'd-none' if session['type'] == 0 }}">
+                    <a class="nav-link {{ 'active' if request.path == url_for('leave') }}" href="{{ url_for('leave') }}">Leave Requests</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item ">
+                    <a class="nav-link text-light">Mr. {{ parameters['name'] }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link navbar-brand" target="_blank"><img class="rounded-circle" width="30" height="30" src="{{ parameters['img_path'] }}" alt="Attendance Management System" title="Attendance Management System"></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p class="h1">Attendance Management System</p>
+        </blockquote>
+    </figure>
+{% endblock %}
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+{% block footer %}{% endblock %}
+</body>
+</html>

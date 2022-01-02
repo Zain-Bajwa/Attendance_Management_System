@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block title %}View{% endblock %}
+
+{% block content %}
+
+    <div class="dropdown row">
+        <div class="col-2">
+            <select class="form-select bg-secondary text-white fw-bold w-100" name="year" id="year">
+                <option value="">Select Year</option>
+                {% for y in range(2018, parameters['year'] + 1) %}
+                    <option value="{{ loop.index }}">{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            <select class="form-select bg-secondary text-white fw-bold w-100" name="month" id="month" onChange="my_fn(this);">
+                <option value="">Select Month</option>
+                {% for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %}
+                    <option value="{{ loop.index }}">{{ month }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn btn-secondary fw-bold w-100" id="view">View Attendance</button>
+        </div>
+    </div>
+    <div class="w-50 pt-3">
+        <p class="h5 text-secondary">Your attendance of month "{{ parameters['month'] }}" is below.</p>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ parameters['progress'] }}%">{{ parameters['progress'] }}%</div>
+        </div>
+        <table class="table mx-auto">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Day</th>
+                <th scope="col">Presence</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in all_days['date'] %}
+                <tr>
+                    <td class="col">{{ all_days['date'][loop.index - 1] }}</td>
+                    <td class="col">{{ all_days['day'][loop.index - 1] }}</td>
+                    <td class="col {% if all_days['presence'][loop.index - 1] == 'A' %}text-danger
+                    {% elif all_days['presence'][loop.index - 1] == 'P' %}text-success
+                    {% endif %}" style="font-size: 15px; font-weight: bold;">{{ all_days['presence'][loop.index - 1] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+{% block footer %}
+    <script>
+        let month;
+        function my_fn(sel) {
+            month = sel.options[sel.selectedIndex].textContent;
+        };
+        $(document).ready(function() {
+
+            $("#view").click(function () {
+                window.location.assign("/view?month=" +month)
+            });
+
+        });
+    </script>
+{% endblock %}
